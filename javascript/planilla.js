@@ -46,35 +46,26 @@ const periodoLabel = document.getElementById('periodo-label');
 const botonFetchHeader = document.getElementById('boton-fetch-header');
 
 // Constantes y variables
-const dataItemTablePlanilla = {
-  id: '',
+const dataFormRemuneracion = {
+  key: '',
   nombres: '',
   apellidos: '',
   dni: '',
   fecha: '',
   cargo: '',
-  sueldo: '',
-  asignacion: '',
+  sueldo: 0,
+  asignacion: 'si',
   otros: '',
-  totalRem: '',
+  totalRem: 0,
   afp: '',
   snp: '',
   quinta: '',
-  totalReten: '',
-  remunera: '',
-  essalud: '',
-  total: '',
-};
-
-const dataFormRemuneracion = {
-  nombres: '',
-  apellidos: '',
-  dni: '',
-  fecha: '',
-  cargo: '',
-  sueldo: '',
-  asignacion: 'si',
+  totalReten: 0,
+  remunera: 0,
+  essalud: 0,
+  total: 0,
   retencion: 'afp',
+  asignacionValue: '',
 }
 
 const dataFormHeader = {
@@ -98,9 +89,13 @@ document.addEventListener('DOMContentLoaded', App);
 
 function App() {
   getDataConfigPlanilla();
-  if (localStorage.getItem('id')) getDataHeaderPlanilla();
 
-  formHeaderPlanilla.addEventListener('submit', handleSubmitHeaderPlanilla);   
+  if (localStorage.getItem('id')) {
+    getDataHeaderPlanilla();
+    botonFetchHeader.textContent = 'Actualizar';
+  }
+
+  formHeaderPlanilla.addEventListener('submit', handleSubmitHeaderPlanilla);
   razonSocial.addEventListener('input', handleChangeInputHeader);
   ruc.addEventListener('input', handleChangeInputHeader);
   year.addEventListener('input', handleChangeInputHeader);
@@ -120,55 +115,74 @@ function App() {
 // Funciones
 
 function handleChangeInputHeader(e) {
+  validateInputsDOM(formHeaderPlanilla.id);
   dataFormHeader[e.target.name] = e.target.value;
 }
 
 function handleChangeInputRemuneracion(e) {
-  if (e.target.name === 'fecha') {
+  validateInputsDOM(formInsertarPlanilla.id);
+  if (e.target.name === 'fecha')
     dataFormRemuneracion.fecha = moment(e.target.value, 'yyyy-MM-DD').format('DD-MM-yyyy');
-  } else {
+  else if (e.target.name === 'sueldo')
+    dataFormRemuneracion.sueldo = Number(e.target.value);
+  else {
     dataFormRemuneracion[e.target.name] = e.target.value;
   }
 }
 
 function handleSubmitHeaderPlanilla(e) {
   e.preventDefault();
-  showLoadingButtonHeader();
   const id = uuid.v4();
 
-  if (localStorage.getItem('id'))
-    headerPlanillaRef
-      .doc(localStorage.getItem('id'))
-      .set(dataFormHeader)
-      .then(() => {
-        hideLoadingButtonHeader();
-      })
-      .catch(error => console.error(error));
-  else
-    headerPlanillaRef
-      .doc(id)
-      .set(dataFormHeader)
-      .then(() => {
-        hideLoadingButtonHeader();
-        localStorage.setItem('id', id);
-      })
-      .catch(error => console.error(error));
-  
-  
+  if (validateInputs(formHeaderPlanilla.id)) {
+    showLoadingButtonHeader(true);
+    if (localStorage.getItem('id'))
+      headerPlanillaRef
+        .doc(localStorage.getItem('id'))
+        .set(dataFormHeader)
+        .then(() => {
+          showLoadingButtonHeader(false);
+          e.target.reset();
+        })
+        .catch(error => console.error(error));
+    else
+      headerPlanillaRef
+        .doc(id)
+        .set(dataFormHeader)
+        .then(() => {
+          showLoadingButtonHeader(false);
+          localStorage.setItem('id', id);
+          e.target.reset();
+        })
+        .catch(error => console.error(error));
+  }
 }
 
 function handleSubmitRemuneracionPlanilla(e) {
   e.preventDefault();
-  insertRemuneracionToList();
-  insertItemsDOM();
+  if (validateInputs(formInsertarPlanilla.id)) {
+    insertRemuneracionToList();
+    insertItemsDOM();
+    e.target.reset();
+  }
 }
 
 function insertRemuneracionToList() {
-  listaRemuneraciones.push({...dataFormRemuneracion});
+  const asignacion = dataFormRemuneracion.asignacion;
+  const sueldo = dataFormRemuneracion.sueldo;
+  const asignacionValue = getAsignacionFamiliar(sueldo, asignacion);
+  const totalRem = getTotalRem(sueldo, asignacionValue);
+  // getRetenciones(totalRem, retencion);
+
+  listaRemuneraciones.push({
+    ...dataFormRemuneracion,
+    totalRem,
+    asignacionValue,
+  });
 }
 
 function getDataConfigPlanilla() {
-  showSpin();
+  showSpin(true);
   configPlanillaRef.get().then((doc) => {
     if (doc.exists) {
       const data = doc.data();
@@ -176,15 +190,14 @@ function getDataConfigPlanilla() {
       dataConfig.rmv = data.rmv;
       dataConfig.aFamiliar = data.familiar;
       dataConfig.aporteONP = data.aporteONP;
-      hiddenSpin();
     } else {
         console.error("No se encontro la colleccion!");
     }
+    showSpin(false);
   }).catch((error) => {
       console.error("Error collection:", error);
   });
 }
-
 
 function getDataHeaderPlanilla() {
   const id = localStorage.getItem('id');
@@ -200,6 +213,34 @@ function getDataHeaderPlanilla() {
   }).catch((error) => {
       console.error("Error collection:", error);
   });
+}
+
+function validateInputs(form) {
+  const formData = form === 'form-insertar-planilla' ? dataFormRemuneracion : dataFormHeader;
+  validateInputsDOM(form);
+  const list = Object.entries(formData);
+  return list.every(item => {
+    switch (item[0]) {
+      case 'ruc':
+        return item[1].length === 11;
+      case 'razonSocial':
+        return item[1].trim() !== '';
+      case 'nombres':
+        return item[1].trim() !== '';
+      case 'apellidos':
+        return item[1].trim() !== '';
+      case 'dni':
+        return item[1].length === 8;
+      case 'fecha':
+        return item[1].trim() !== '';
+      case 'cargo':
+        return item[1].trim() !== '';
+      case 'sueldo':
+        return item[1] >= 0;
+      default:
+        return true;
+    }
+  })
 }
 
 // Funnciones para cálculos 
@@ -231,7 +272,6 @@ function getRetenciones(totalRemuneracion, tipoRetencion, tipoAFP){
 }
 
 
-
 // DOM Funciones
 
 function insertItemsDOM() {
@@ -241,7 +281,12 @@ function insertItemsDOM() {
       ...item,
       key,
     }));
+    listaRemuneraciones[key] = {
+      ...item,
+      key,
+    };
   });
+  console.log(listaRemuneraciones);
 }
 
 function itemTablePlanillaDOM(data) {
@@ -253,12 +298,10 @@ function itemTablePlanillaDOM(data) {
     fecha,
     cargo,
     sueldo,
-    asignacion,
-    retencion,
+    asignacionValue,
+    totalRem,
   } = data;  
-  const asignacionValue = getAsignacionFamiliar(sueldo, asignacion);
-  const totalRem = getTotalRem(sueldo, asignacionValue);
-  getRetenciones(totalRem, retencion);
+
   const tr = document.createElement('tr');
   tr.innerHTML = `
     <td>${key + 1}</td>
@@ -271,36 +314,54 @@ function itemTablePlanillaDOM(data) {
     <td>${asignacionValue}</td>
     <td></td>
     <td>${totalRem}</td>
-    <td>${cargo}</td>
-    <td>${cargo}</td>
-    <td>${cargo}</td>
-    <td>${sueldo}</td>
-    <td>${sueldo}</td>
-    <td>${sueldo}</td>
-    <td>${sueldo}</td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
   `;
   return tr;
 }
 
-function showSpin() {
-  spin.style.display = 'flex';
+function showSpin(flag) {
+  if (flag) spin.style.display = 'flex';
+  else spin.style.display = 'none';
 }
 
-function hiddenSpin() {
-  spin.style.display = 'none';
-}
-
-function showLoadingButtonHeader() {
-  botonFetchHeader.innerHTML = `
+function showLoadingButtonHeader(flag) {
+  if (flag) botonFetchHeader.innerHTML = `
     <span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>
     Cargando...
   `;
-}
-
-function hideLoadingButtonHeader() {
-  botonFetchHeader.textContent = 'Aceptar';
+  else botonFetchHeader.textContent = 'Actualizar';
 }
 
 function clearTableRemuneraciones() {
   tableContentPlanilla.innerHTML = '';
+}
+
+function validateInputsDOM(form) {
+  if (form === 'form-header-planilla') {
+    validateInputDOM(razonSocial, razonSocial.value.trim() === '');
+    validateInputDOM(ruc, ruc.value.length !== 11);
+  } else {
+    validateInputDOM(nombres, nombres.value.trim() === '');
+    validateInputDOM(apellidos, apellidos.value.trim() === '');
+    validateInputDOM(dni, dni.value.length !== 8);
+    validateInputDOM(fecha, fecha.value.trim() === '');
+    validateInputDOM(cargo, cargo.value.trim() === '');
+    validateInputDOM(sueldoBasico, sueldoBasico.value >= 0);
+  }
+}
+
+function validateInputDOM(node, flag) {
+  if (flag) {
+    node.classList.add('is-invalid');
+    node.classList.remove('is-valid');
+  } else {
+    node.classList.add('is-valid');
+    node.classList.remove('is-invalid');
+  }
 }
