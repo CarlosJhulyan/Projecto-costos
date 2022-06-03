@@ -62,10 +62,10 @@
         </div>
 <!--  haciendo los boletas de pagos con boostrap -->
         <div>
-          <table class="table table-dark table-striped table-bordered text-primary">   
+          <table class="table table-dark table-striped table-bordered">   
             <thead>
               <tr class="text-center">   
-                <th scope="col" width="300" > NÚMERO DE ORDEN</th>
+                <th scope="col" width="300" class="text-primary"> NÚMERO DE ORDEN</th>
                 <th scope="col"  >______</th>  
               </tr>
             </thead>
@@ -73,18 +73,18 @@
         </div>
 
         <div>
-          <table class="table table-dark table-striped table-bordered text-primary">   
+          <table class="table table-dark table-striped table-bordered">   
             <thead>
-              <tr class="text-center">             
-                <th scope="col"  colspan="1" width="300">RUC</th>
+              <tr class="text-center">
+                <th scope="col" class="text-primary" colspan="1" width="300">RUC</th>
                 <th scope="col" >______</th>
               </tr>
-              <tr class="text-center">             
-                <th scope="col"  colspan="1">EMPLEADOR</th>
+              <tr class="text-center">
+                <th scope="col" class="text-primary" colspan="1">EMPLEADOR</th>
                 <th scope="col"  >______</th>
               </tr>
-              <tr class="text-center">             
-                <th scope="col"  colspan="1">PERIODO</th>
+              <tr class="text-center">
+                <th scope="col" class="text-primary" colspan="1">PERIODO</th>
                 <th scope="col"  >______</th>
               </tr>
               
@@ -141,16 +141,16 @@
 
         <!--  inicio  de tabla 2   -->
         <div>
-          <table class="table table-dark table-striped table-bordered text-primary">
+          <table class="table table-dark table-striped table-bordered">
             <thead>
-              <tr class="text-center">             
+              <tr class="text-center text-primary">
                 <th scope="col" >CÓDIGO</th>
                 <th scope="col" >CONCEPTOS</th>
                 <th scope="col" >INGRESOS</th>
                 <th scope="col" >DESCUENTOS</th>
                 <th scope="col" >NETO</th>
               </tr>
-              <tr class="text-lg-start">
+              <tr class="text-lg-start text-primary">
                 <th scope="col" colspan="5">Tipo</th> 
               </tr>
             </thead>
@@ -178,7 +178,7 @@
 
 
             <thead>
-              <tr>              
+              <tr class="text-primary">
                 <th scope="col" colspan="5">Aportes del trabajador</th>
               </tr>
             </thead>
@@ -210,154 +210,16 @@
               </tr>
 
               <thead>
-                <tr>              
+                <tr class="text-primary">
                   <th scope="col" colspan="4">Neto a pagar</th>
                   <th scope="col" >S/. </th>
                 </tr> 
             </tbody>
           </table>
         </div>
-
-
-
-
-
       </main>
-
-
-
     </div>
-  </div>
-
-  <div class="modal fade" id="modalConfigurarPlanilla" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="modalConfigurarPlanilla" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="staticBackdropLabel">Configurar Planilla</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <form>
-          <div class="modal-body">
-            <div class="mb-3">
-              <label for="razon-social" class="form-label">Razon Social</label>
-              <input type="text" class="form-control" id="razon-social" />
-            </div>
-            <div class="mb-3">
-              <label for="ruc" class="form-label">RUC</label>
-              <input type="text" class="form-control" id="ruc" />
-            </div>
-            <div class="mb-3">
-              <label class="form-label" for="month">Mes</label>
-              <select class="form-select" id="month">
-                <option value="0" selected>ENERO</option>
-                <option value="1">FEBRERO</option>
-                <option value="2">MARZO</option>
-                <option value="3">ABRIL</option>
-                <option value="4">MAYO</option>
-                <option value="5">JUNIO</option>
-                <option value="6">JULIO</option>
-                <option value="7">AGOSTO</option>
-                <option value="8">SEPTIEMBRE</option>
-                <option value="9">OCTUBRE</option>
-                <option value="10">NOVIEMBRE</option>
-                <option value="11">DICIEMBRE</option>
-              </select>
-            </div>
-            <div class="mb-3">
-              <label class="form-label" for="year">Año</label>
-              <select class="form-select" id="year">
-                <option value="2022" selected>2022</option>
-                <option value="2023">2023</option>
-                <option value="2024">2024</option>
-                <option value="2025">2025</option>
-                <option value="2026">2026</option>
-                <option value="2027">2027</option>
-                <option value="2028">2028</option>
-                <option value="2029">2029</option>
-                <option value="2030">2030</option>
-                <option value="2031">2031</option>
-                <option value="2032">2032</option>
-                <option value="2033">2033</option>
-              </select>
-            </div>
-          </div>
-          
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-            <button type="submit" class="btn btn-primary">Aceptar</button>
-          </div>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <div class="modal fade modal-lg" id="modalInsertar" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="modalInsertar" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="staticBackdropLabel">Insertar Remuneraciones</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <form>
-          <div class="modal-body">
-            <div class="row">
-              <div class="mb-3 col">
-                <label for="nombres" class="form-label">Nombres</label>
-                <input type="text" class="form-control" id="nombres" />
-              </div>
-              <div class="mb-3 col">
-                <label for="apellidos" class="form-label">Apellidos</label>
-                <input type="text" class="form-control" id="apellidos" />
-              </div>
-            </div>
-            <div class="row">
-              <div class="mb-3 col">
-                <label for="dni" class="form-label">DNI</label>
-                <input type="text" class="form-control" id="dni" />
-              </div>
-              <div class="mb-3 col">
-                <label for="fecha" class="form-label">Fecha de Ingreso</label>
-                <input type="date" class="form-control" id="fecha" />
-              </div>
-            </div>
-            <div class="row">
-              <div class="mb-3 col">
-                <label for="cargo" class="form-label">Cargo</label>
-                <input type="text" class="form-control" id="cargo" />
-              </div>
-              <div class="mb-3 col">
-                <label for="sueldo-basico" class="form-label">Sueldo basico</label>
-                <input type="text" class="form-control" id="sueldo-basico" />
-              </div>
-            </div>
-            <div class="row">
-              <div class="mb-3 col">
-                <label for="asignacion" class="form-label">Asignación Familiar</label>
-                <select class="form-select" id="asignacion">
-                  <option value="si" selected>SI</option>
-                  <option value="no">NO</option>
-                </select>
-              </div>
-              <div class="mb-3 col">
-                <label for="retencion" class="form-label">RETENCIONES</label>
-                <select class="form-select" id="retencion">
-                  <option value="afp" selected>AFP</option>
-                  <option value="snp">SNP</option>
-                  <option value="renta">RENTA QUINTA</option>
-                </select>
-              </div>
-            </div>
-          </div>
-          
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-            <button type="submit" class="btn btn-primary">Aceptar</button>
-          </div>
-        </div>
-      </form>
-    </div>
-  </div>
-  
+  </div>  
 </body>
 <script src="../assets/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/feather-icons@4.28.0/dist/feather.min.js" integrity="sha384-uO3SXW5IuS1ZpFPKugNNWqTZRRglnUJK6UAZ/gxOX80nxEkN9NcGZTftn6RzhGWE" crossorigin="anonymous"></script><script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.min.js" integrity="sha384-zNy6FEbO50N+Cg5wap8IKA4M/ZnLJgzc6w2NqACZaK0u0FXfOWRRJOnQtpZun8ha" crossorigin="anonymous"></script>

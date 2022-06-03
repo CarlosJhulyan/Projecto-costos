@@ -1,6 +1,5 @@
 'use strict';
 
-// TODO: Replace the following with your app's Firebase project configuration
 const firebaseConfig = {
   apiKey: "AIzaSyBEl7-KkDTFg2l8i1VOwMI77rmYeJapwx4",
   authDomain: "proyecto-costos-13e03.firebaseapp.com",
@@ -15,12 +14,10 @@ const app = firebase.initializeApp(firebaseConfig);
 const db = app.firestore();
 
 // URL Data
-const dataConfigPlanillaRef = db.collection('dataConfigPlanilla').doc('N9cuT6iVfjBtwsxpnVuV');
+const configPlanillaRef = db.collection('dataConfigPlanilla').doc('N9cuT6iVfjBtwsxpnVuV');
 
 
 // DOM Constantes
-const tableContentPlanilla = document.getElementById('table-content-planilla')
-
 const rmv = document.getElementById('rmv');
 const essalud = document.getElementById('essalud');
 const familiar = document.getElementById('familiar');
@@ -54,33 +51,7 @@ const inputsConfigPlanilla = document.querySelectorAll('.input-config-planilla')
 
 
 // Constantes y variables
-const dataItemTablePlanilla = {
-  id: '',
-  nombres: '',
-  apellidos: '',
-  dni: '',
-  fecha: '',
-  cargo: '',
-  sueldo: '',
-  asigna: '',
-  otros: '',
-  totalRem: '',
-  afp: '',
-  snp: '',
-  quinta: '',
-  totalReten: '',
-  remunera: '',
-  essalud: '',
-  total: '',
-};
 
-const dataHeaderPlanilla = {
-  razonSocial: '',
-  ruc: '',
-  year: moment().format('yyyy'),
-  monthText: new Date().getMonth(),
-  monthValue: new Date().getMonth(),
-};
 
 // App
 
@@ -117,53 +88,32 @@ function chargeDataConfigPlanilla(dataConfigPlanilla) {
 
 function handleChangeEditPlanilla (e) {
   inputsConfigPlanilla.forEach(item => {
-    if (e.target.checked) item.removeAttribute('disabled');
-    else item.setAttribute('disabled', '');
+    if (e.target.checked) {
+      item.removeAttribute('disabled');
+      botonGuardado.removeAttribute('disabled');
+    } else {
+      item.setAttribute('disabled', '');
+      botonGuardado.setAttribute('disabled', '');
+    };
   })
 }
 
 function getDataConfigPlanilla() {
   showSpin();
-  dataConfigPlanillaRef.get().then((doc) => {
+  configPlanillaRef.get().then((doc) => {
     if (doc.exists) {
       chargeDataConfigPlanilla(doc.data());
       hiddenSpin();
     } else {
-        console.log("No se encontro la colleccion!");
+        console.error("No se encontro la colleccion!");
     }
   }).catch((error) => {
-      console.log("Error collection:", error);
+      console.error("Error collection:", error);
   });
 }
 
 
 // DOM Acciones
-
-function insertItemDOM() {
-  
-}
-
-function itemTablePlanillaDOM(data) {
-  const {
-    id,
-    nombres,
-    apellidos,
-    dni,
-    fecha,
-    cargo,
-    sueldo,
-    asigna,
-    otros,
-    totalRem,
-    
-  } = data;
-  const tr = document.createElement('tr');
-  tr.innerHTML = `
-    <td>${id}</td>
-    <td>${nombres}</td>
-  `;
-}
-
 function showSpin() {
   spin.style.display = 'flex';
 }
