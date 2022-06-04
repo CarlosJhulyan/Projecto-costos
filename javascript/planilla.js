@@ -19,7 +19,7 @@ const remuneracionesPlanillaRef = db.collection('dataRemuneracionPlanilla');
 const configPlanillaRef = db.collection('dataConfigPlanilla').doc('N9cuT6iVfjBtwsxpnVuV');
 
 // DOM constantes
-const tableContentPlanilla = document.getElementById('table-content-planilla')
+const tableContentPlanilla = document.getElementById('table-content-planilla');
 const spin = document.getElementById('spin');
 
 
@@ -40,6 +40,8 @@ const cargo = document.getElementById('cargo');
 const sueldoBasico = document.getElementById('sueldo');
 const asignacion = document.getElementById('asignacion');
 const retencion = document.getElementById('retencion');
+const retencionAfp = document.getElementById('retencion-afp');
+const tiposAfp = document.getElementById('tipos-afp');
 
 const razonSocialLabel = document.getElementById('razon-social-label');
 const rucLabel = document.getElementById('ruc-label');
@@ -58,7 +60,7 @@ const dataFormRemuneracion = {
   cargo: '',
   sueldo: 0,
   asignacion: 'si',
-  otros: '',
+  otros: 0,
   totalRem: 0,
   afp: '',
   snp: '',
@@ -70,6 +72,7 @@ const dataFormRemuneracion = {
   retencion: 'afp',
   totalAport: 0,
   asignacionValue: '',
+  retencionAfp: 'prima',
 }
 
 const dataFormHeader = {
@@ -80,11 +83,16 @@ const dataFormHeader = {
 };
 
 const listaRemuneraciones = [];
+
 const dataConfig = {
   aFamiliar: 0,
   essalud: 0,
   rmv: 0,
   aporteONP: 0,
+}
+
+const totales = {
+  
 }
 
 // App
@@ -96,6 +104,7 @@ function App() {
 
   if (localStorage.getItem('id')) {
     getDataHeaderPlanilla();
+    getDataRemuneracionPlanilla();
     buttonFetchHeader.textContent = 'Actualizar';
   }
 
@@ -114,8 +123,10 @@ function App() {
   sueldoBasico.addEventListener('input', handleChangeInputRemuneracion);
   asignacion.addEventListener('input', handleChangeInputRemuneracion);
   retencion.addEventListener('input', handleChangeInputRemuneracion);
+  retencionAfp.addEventListener('input', handleChangeInputRemuneracion);
 
   buttonSave.addEventListener('click', saveListRemuneraciones);
+  buttonClear.addEventListener('click', clearTableRemuneraciones);
 }
 
 
@@ -133,9 +144,9 @@ function handleChangeInputRemuneracion(e) {
     dataFormRemuneracion.fecha = moment(e.target.value, 'yyyy-MM-DD').format('DD-MM-yyyy');
   else if (e.target.name === 'sueldo')
     dataFormRemuneracion.sueldo = Number(e.target.value);
-  else {
-    dataFormRemuneracion[e.target.name] = e.target.value;
-  }
+  else if (e.target.name === 'retencion')
+    showInputRetencionAfp(e.target.name === 'retencion' && e.target.value === "afp");
+  else dataFormRemuneracion[e.target.name] = e.target.value;
 }
 
 function handleSubmitHeaderPlanilla(e) {
@@ -150,6 +161,7 @@ function handleSubmitHeaderPlanilla(e) {
         .set(dataFormHeader)
         .then(() => {
           showLoadingButtonHeader(false);
+          openNotification('Encabezado', '¡Encabezado actualizado!', 'success');
           e.target.reset();
         })
         .catch(error => console.error(error));
@@ -160,6 +172,7 @@ function handleSubmitHeaderPlanilla(e) {
         .then(() => {
           showLoadingButtonHeader(false);
           localStorage.setItem('id', id);
+          openNotification('Encabezado', '¡Encabezado guardado!', 'success');
           e.target.reset();
         })
         .catch(error => console.error(error));
@@ -172,6 +185,7 @@ function handleSubmitRemuneracionPlanilla(e) {
     insertRemuneracionToList();
     insertItemsDOM();
     clearDataRemuneraciones();
+    openNotification('Remuneración', '¡Remuneración insertado en la tabla!', 'success');
     e.target.reset();
   }
 }
@@ -185,15 +199,15 @@ function saveListRemuneraciones() {
       .set({ lista: listaRemuneraciones })
       .then(() => {
         showLoadingButtonSave(false);
-        alert('Se guardo la lista');
+        openNotification('Remuneración', '¡Lista de remuneraciones guardado!', 'success');
       })
       .catch(error => console.error(error));
-      else alert('La lista esta vacia.');
-  } else alert('No se configuró la cabecera de planilla.');
+      else openNotification('Remuneración', '¡La lista esta vacia!', 'warning');
+  } else openNotification('Remuneración', '¡Configurar la cabecera de planilla!', 'warning');
 }
 
 function insertRemuneracionToList() {
-  const asignacion = dataFormRemuneracion.asignacion;
+  const asignacion = dataFormRemuneracion.asignacion; // texto
   const sueldo = dataFormRemuneracion.sueldo;
   const asignacionValue = getAsignacionFamiliar(asignacion);
   const totalRem = getTotalRem(sueldo, asignacionValue);
@@ -216,6 +230,7 @@ function insertRemuneracionToList() {
     remunera,
     essalud,
     totalAport,
+    otros: 0,
   });
 }
 
@@ -224,17 +239,10 @@ function getDataConfigPlanilla() {
   configPlanillaRef.get().then((doc) => {
     if (doc.exists) {
       const data = doc.data();
-      dataConfig.essalud = data.essalud / 100;
-      dataConfig.rmv = data.rmv;
-      dataConfig.aFamiliar = data.familiar / 100;
-      dataConfig.aporteONP = data.aporteONP / 100;
-    } else {
-        console.error("No se encontro la colleccion!");
-    }
+      chargeDataConfig(data);
+    } else openNotification('Base de datos', '¡No se encontró la collección!', 'error');
     showSpin(false);
-  }).catch((error) => {
-      console.error("Error collection:", error);
-  });
+  }).catch((error) => console.error(error));
 }
 
 function getDataHeaderPlanilla() {
@@ -245,12 +253,19 @@ function getDataHeaderPlanilla() {
       razonSocialLabel.textContent = data.razonSocial;
       rucLabel.textContent = data.ruc;
       periodoLabel.textContent = data.year;
-    } else {
-        console.error("No se encontro el documento!");
-    }
-  }).catch((error) => {
-      console.error("Error collection:", error);
-  });
+    } else openNotification('Base de datos', '¡No se encontró la collección!', 'error');
+  }).catch((error) => console.error(error));
+}
+
+function getDataRemuneracionPlanilla() {
+  const id = localStorage.getItem('id');
+  remuneracionesPlanillaRef.doc(id).get().then((doc) => {
+    if (doc.exists) {
+      const data = doc.data();
+      listaRemuneraciones.push(...data.lista);
+      insertItemsDOM();
+    } else openNotification('Base de datos', '¡No se encontró la collección!', 'error');
+  }).catch((error) => console.error(error));
 }
 
 function validateInputs(form) {
@@ -283,7 +298,27 @@ function validateInputs(form) {
 
 function clearDataRemuneraciones() {
   dataFormRemuneracion.afp = 0;
+  dataFormRemuneracion.nombres = '';
   dataFormRemuneracion.apellidos = '';
+  dataFormRemuneracion.dni = '';
+  dataFormRemuneracion.cargo = '';
+}
+
+function clearTableRemuneraciones(){
+  clearTableRemuneracionesDOM();
+  listaRemuneraciones.splice(0, listaRemuneraciones.length);
+}
+
+function clearItemList(index) {
+  listaRemuneraciones.splice(index, 1);
+  insertItemsDOM();
+}
+
+function chargeDataConfig(data) {
+  dataConfig.essalud = data.essalud / 100;
+  dataConfig.rmv = data.rmv;
+  dataConfig.aFamiliar = data.familiar / 100;
+  dataConfig.aporteONP = data.aporteONP / 100;
 }
 
 // Funnciones para cálculos 
@@ -311,13 +346,19 @@ function getRetenciones(totalRemuneracion, tipo, tipoRetencion, tipoAFP) {
     return 0;
   }
 }
+function roundNumber(value = 0) {
+  const t = value.toString();
+  const regex=/(\d*.\d{0,2})/;
+  return t.match(regex)[0];
+}
 
 function getTotalRetenciones(afp, snp, renta){
   return afp + snp + renta;
 }
 
 function getRemuneAportacion(totalRem, totalReten) {
-  return totalRem - totalReten;
+return totalRem - totalReten;
+ 
 }
 
 function getEssalud(totalRem) {
@@ -328,11 +369,23 @@ function totalAportacion(totalRem) {
   return getEssalud(totalRem);
 }
 
+function getTotalColumn(type) {
+  const t = listaRemuneraciones.reduce((current, item) => {
+    const entries = Object.entries(item);
+    const total = entries.reduce((currentValue, value) => {
+      if (value[0] === type) return currentValue + Number(value[1]);
+      return currentValue;
+    }, 0);
+    return current + total;
+  }, 0);
+  return roundNumber(t);
+}
+
 
 // DOM Funciones
 
 function insertItemsDOM() {
-  clearTableRemuneraciones();
+  clearTableRemuneracionesDOM();
   listaRemuneraciones.map((item, key) => {
     tableContentPlanilla.appendChild(itemTablePlanillaDOM({
       ...item,
@@ -343,6 +396,7 @@ function insertItemsDOM() {
       key,
     };
   });
+  tableContentPlanilla.appendChild(itemEndTableTotal());
   showdButtonsActions(listaRemuneraciones.length === 0);
 }
 
@@ -364,8 +418,9 @@ function itemTablePlanillaDOM(data) {
     remunera,
     totalAport,
     essalud,
+    otros,
   } = data;
-
+  
   const tr = document.createElement('tr');
   tr.innerHTML = `
     <td>${key + 1}</td>
@@ -375,16 +430,59 @@ function itemTablePlanillaDOM(data) {
     <td>${fecha}</td>
     <td>${cargo}</td>
     <td>${sueldo}</td>
-    <td>${asignacionValue}</td>
+    <td>${roundNumber(asignacionValue)}</td>
+    <td>${otros}</td>
+    <td>${roundNumber(totalRem)}</td>
+    <td>${roundNumber(afp)}</td>
+    <td>${roundNumber(snp)}</td>
+    <td>${roundNumber(quinta)}</td>
+    <td>${roundNumber(totalReten)}</td>
+    <td>${roundNumber(remunera)}</td>
+    <td>${roundNumber(essalud)}</td>
+    <td>${roundNumber(totalAport)}</td>
+  `;
+
+  const button = document.createElement('button');
+  const td = document.createElement('td');
+
+  td.classList.add('text-center');
+  button.classList.add('btn', 'btn-danger', 'btn-sm');
+  button.innerHTML = `
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
+      <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
+      <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
+    </svg>
+  `;
+  button.onclick = () => {
+    clearItemList(key);
+  }
+
+  td.appendChild(button);
+  tr.appendChild(td);
+  return tr;
+}
+
+function itemEndTableTotal() {
+  const tr = document.createElement('tr');
+  tr.innerHTML = `
     <td></td>
-    <td>${totalRem}</td>
-    <td>${afp}</td>
-    <td>${snp}</td>
-    <td>${quinta}</td>
-    <td>${totalReten}</td>
-    <td>${remunera}</td>
-    <td>${essalud}</td>
-    <td>${totalAport}</td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <th class="text-primary">TOTAL</th>
+    <td>${getTotalColumn('sueldo')}</td>
+    <td>${getTotalColumn('asignacionValue')}</td>
+    <td>${getTotalColumn('otros')}</td>
+    <td class="text-success">${getTotalColumn('totalRem')}</td>
+    <td>${getTotalColumn('afp')}</td>
+    <td>${getTotalColumn('snp')}</td>
+    <td>${getTotalColumn('quinta')}</td>
+    <td>${getTotalColumn('totalReten')}</td>
+    <td class="text-warning">${getTotalColumn('remunera')}</td>
+    <td>${getTotalColumn('essalud')}</td>
+    <td class="text-success">${getTotalColumn('totalAport')}</td>
+    <td></td>
   `;
   return tr;
 }
@@ -402,7 +500,7 @@ function showLoadingButtonHeader(flag) {
   else buttonFetchHeader.textContent = 'Actualizar';
 }
 
-function clearTableRemuneraciones() {
+function clearTableRemuneracionesDOM() {
   tableContentPlanilla.innerHTML = '';
 }
 
@@ -447,3 +545,21 @@ function validateInputDOM(node, flag) {
     node.classList.remove('is-invalid');
   }
 }
+
+function openNotification(title, text, icon) {
+  Swal.fire({
+    title,
+    text,
+    icon,
+    timer: 1500,
+    showConfirmButton: false,
+  });
+}
+
+function showInputRetencionAfp(flag) {
+  if (flag) tiposAfp.removeAttribute('hidden');
+  else tiposAfp.setAttribute('hidden', '');
+}
+
+// document.getElementById('cpmo').innerHTML= (getTotalColumn(totalRemuneracion)+getTotalColumn(total)).toString;
+// document.getElementById('ceptt').innerHTML= (getTotalColumn(remunera)).toString;

@@ -100,13 +100,15 @@ function handleChangeEditPlanilla (e) {
 
 function getDataConfigPlanilla() {
   showSpin();
-  configPlanillaRef.get().then((doc) => {
-    if (doc.exists) {
-      chargeDataConfigPlanilla(doc.data());
-      hiddenSpin();
-    } else {
-        console.error("No se encontro la colleccion!");
-    }
+  configPlanillaRef
+    .get()
+    .then((doc) => {
+      if (doc.exists) {
+        chargeDataConfigPlanilla(doc.data());
+        hiddenSpin();
+      } else {
+          console.error("No se encontro la colleccion!");
+      }
   }).catch((error) => {
       console.error("Error collection:", error);
   });
