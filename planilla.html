@@ -70,6 +70,12 @@
             <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalInsertar">
               Insertar
             </button>
+            <button type="button" class="btn btn-success" id="button-save" hidden>
+              Guardar
+            </button>
+            <button type="button" class="btn btn-danger" id="button-clear" hidden>
+              Limpiar
+            </button>
           </div>
         </div>
 
@@ -77,13 +83,13 @@
         <span><b>RUC:</b> <span id="ruc-label"></span></span> <br>
         <span><b>Periodo:</b> <span id="periodo-label"></span></span> <br><br>
         <div class="table-responsive">
-          <table class="table table-striped table-sm table-striped-columns table-hover table-dark">
+          <table class="table table-striped table-sm table-striped-columns table-hover table-dark table-bordered">
             <thead>
               <tr class="text-center">
                 <th colspan="10"></th>
                 <th colspan="4">RETENCIONES</th>
-                <th colspan="2">APORTACION</th>
-                <th colspan="1"></th>
+                <th rowspan="2">REMUNERACION NETA</th>
+                <th colspan="2" >APORTACION</th>
               </tr>
               <tr class="text-center">
                 <th scope="col">#</th>
@@ -102,9 +108,7 @@
                 <th scope="col">RENTA QUI</th>
                 <th scope="col">TOTAL</th>
 
-                <th scope="col">REMUNERA</th>
                 <th scope="col">ESSALUD</th>
-
                 <th scope="col">TOTAL</th>
               </tr>
             </thead>
@@ -137,7 +141,7 @@
             </div>
             <div class="mb-3">
               <label for="ruc" class="form-label">RUC</label>
-              <input type="text" class="form-control" id="ruc" name="ruc" autocomplete="none" />
+              <input type="number" class="form-control" id="ruc" name="ruc" autocomplete="none" />
             </div>
             <div class="mb-3">
               <label class="form-label" for="month">Mes</label>
@@ -177,7 +181,7 @@
           
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-            <button type="submit" class="btn btn-primary" id="boton-fetch-header">Aceptar</button>
+            <button type="submit" class="btn btn-success" id="button-fetch-header">Aceptar</button>
           </div>
         </div>
       </form>
@@ -220,7 +224,7 @@
               </div>
               <div class="mb-3 col">
                 <label for="sueldo" class="form-label">Sueldo basico</label>
-                <input type="text" class="form-control" id="sueldo" name="sueldo" />
+                <input type="number" class="form-control" id="sueldo" name="sueldo" />
               </div>
             </div>
             <div class="row">
@@ -244,7 +248,7 @@
           
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-            <button type="submit" class="btn btn-primary">Aceptar</button>
+            <button type="submit" class="btn btn-success">Aceptar</button>
           </div>
         </div>
       </form>
