@@ -11,6 +11,12 @@
   <link href="../assets/dist/css/bootstrap.min.css" rel="stylesheet" />
   <link href="dashboard.css" rel="stylesheet" />
   <script src="assets/moment/moment.js"></script>
+
+  <script src="https://www.gstatic.com/firebasejs/9.8.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.8.2/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.8.2/firebase-auth-compat.js"></script>
+
+  <script src="assets/sweetalert2/sweetalert2@11.js"></script>
 </head>
 <body>
 
@@ -26,10 +32,17 @@
       <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse bg-dark">
         <div class="position-sticky pt-3">
           <ul class="nav flex-column">
+            
             <li class="nav-item">
               <a class="nav-link text-white-50" href="/">
                 <span data-feather="file" class="align-text-bottom text-white-50"></span>
                 Sobre Nosotros
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link text-white-50" href="/control_inventario.html">
+                <span data-feather="file" class="align-text-bottom text-white-50"></span>
+                Control de Inventario
               </a>
             </li>
             <li class="nav-item">
@@ -66,26 +79,26 @@
             <thead>
               <tr class="text-center">   
                 <th scope="col" width="300" class="text-primary"> NÚMERO DE ORDEN</th>
-                <th scope="col"  >______</th>  
+                <th scope="col" id="numero-orden-label">______</th>
               </tr>
             </thead>
           </table>
         </div>
 
         <div>
-          <table class="table table-dark table-striped table-bordered">   
+          <table class="table table-dark table-striped table-bordered">
             <thead>
               <tr class="text-center">
                 <th scope="col" class="text-primary" colspan="1" width="300">RUC</th>
-                <th scope="col" >______</th>
+                <th scope="col" id="ruc-label">______</th>
               </tr>
               <tr class="text-center">
                 <th scope="col" class="text-primary" colspan="1">EMPLEADOR</th>
-                <th scope="col"  >______</th>
+                <th scope="col" id="empleador-label">______</th>
               </tr>
               <tr class="text-center">
                 <th scope="col" class="text-primary" colspan="1">PERIODO</th>
-                <th scope="col"  >______</th>
+                <th scope="col" id="periodo-label">______</th>
               </tr>
               
             </thead>
@@ -110,10 +123,10 @@
             </thead>
             <tbody>
               <tr>
-                <td>_________</td>
-                <td>_________</td>
-                <td>_________</td>
-                <td>_________</td>
+                <td id="tipo-label">_________</td>
+                <td id="numero-label">_________</td>
+                <td id="nombre-apellido-label ">_________</td>
+                <td id="situacion-lavel">_________</td>
               </tr>         
             </tbody>
             <thead>
@@ -126,10 +139,10 @@
             </thead>
             <tbody>
               <tr>
-                <td>_________</td>
-                <td>_________</td>
-                <td>_________</td>
-                <td>_________</td>
+                <td id="fecha-ingreso-label">_________</td>
+                <td id="cargo-trabajador-label">_________</td>
+                <td id="regime-lable">_________</td>
+                <td id="cuspp-label">_________</td>
             
               </tr>
             
@@ -146,29 +159,29 @@
               <tr class="text-center text-primary">
                 <th scope="col" >CÓDIGO</th>
                 <th scope="col" >CONCEPTOS</th>
-                <th scope="col" >INGRESOS</th>
-                <th scope="col" >DESCUENTOS</th>
-                <th scope="col" >NETO</th>
+                <th scope="col" >INGRESOS S/.</th>
+                <th scope="col" >DESCUENTOS S/.</th>
+                <th scope="col" >NETO S/.</th>
               </tr>
               <tr class="text-lg-start text-primary">
-                <th scope="col" colspan="5">Tipo</th> 
+                <th scope="col" colspan="5">Ingresos</th> 
               </tr>
             </thead>
             <tbody class="text-center">
               <tr >
-                <td colspan="2">_________</td>
+                <td colspan="2">Remneración o suledo basico</td>
+                <td>__________</td>
+                <td colspan="2">____________</td> 
+              </tr>         
+              
+              <tr >
+                <td colspan="2">Asignación familiar</td>
                 <td>_________</td>
                 <td colspan="2">_________</td> 
               </tr>         
-              <tr>
+            
               <tr >
-                <td colspan="2">_________</td>
-                <td>_________</td>
-                <td colspan="2">_________</td> 
-              </tr>         
-              <tr>
-              <tr >
-                <td colspan="2">_________</td>
+                <td colspan="2">Otros ingresos</td>
                 <td>_________</td>
                 <td colspan="2">_________</td> 
               </tr>         
@@ -216,6 +229,10 @@
                 </tr> 
             </tbody>
           </table>
+
+          <div id="spin" class="w-100 h-100 fixed-top justify-content-center align-items-center bg-black bg-opacity-25" style="display: none;">
+            <div class="spinner-grow text-primary" style="width: 4rem; height: 4rem;" role="status"></div>
+          </div>
         </div>
       </main>
     </div>

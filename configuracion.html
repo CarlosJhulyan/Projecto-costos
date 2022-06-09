@@ -37,6 +37,13 @@
               </a>
             </li>
             <li class="nav-item">
+              <a class="nav-link text-white-50" href="/control_inventario.html">
+                <span data-feather="file" class="align-text-bottom text-white-50"></span>
+                Control de Inventario
+              </a>
+            </li>
+            
+            <li class="nav-item">
               <a class="nav-link active" href="/configuracion.html">
                 <span data-feather="file" class="align-text-bottom text-white-50"></span>
                 Configuración de Planilla
@@ -74,11 +81,17 @@
           </div>
           <div class="mb-3 col-4">
             <label for="essalud" class="form-label">ESSALUD</label>
-            <input type="text" class="form-control input-config-planilla" id="essalud" disabled/>
+            <div class="input-group">
+              <input type="text" class="form-control input-config-planilla" id="essalud" disabled/>
+            <span class="input-group-text">%</span>
+            </div>
           </div>
           <div class="mb-3 col-4">
             <label for="familiar" class="form-label">A. Familiar</label>
-            <input type="text" class="form-control input-config-planilla" id="familiar" disabled/>
+            <div class="input-group">
+              <input type="text" class="form-control input-config-planilla" id="familiar" disabled/>
+            <span class="input-group-text">%</span>
+            </div>
           </div>
 
           <hr />
@@ -98,55 +111,100 @@
               <tr>
                 <th>APORTE OBLIGATORIO</th>
                 <td>
-                  <input type="text" class="form-control input-config-planilla" id="aporte-onp" disabled/>
+                  <div class="input-group">
+                    <input type="text" class="form-control input-config-planilla" id="aporte-onp" disabled/>
+                  <span class="input-group-text">%</span>
+                  </div>
                 </td>
                 <td>
-                  <input type="text" class="form-control input-config-planilla" id="aporte-prima" disabled/>
+                  <div class="input-group">
+                    <input type="text" class="form-control input-config-planilla" id="aporte-prima" disabled/>
+                  <span class="input-group-text">%</span>
+                  </div>
                 </td>
                 <td>
-                  <input type="text" class="form-control input-config-planilla" id="aporte-habitat" disabled/>
+                  <div class="input-group">
+                    <input type="text" class="form-control input-config-planilla" id="aporte-habitat" disabled/>
+                  <span class="input-group-text">%</span>
+                  </div>
                 </td>
                 <td>
-                  <input type="text" class="form-control input-config-planilla" id="aporte-integra" disabled/>
+                  <div class="input-group">
+                    <input type="text" class="form-control input-config-planilla" id="aporte-integra" disabled/>
+                  <span class="input-group-text">%</span>
+                  </div>
                 </td>
                 <td>
-                  <input type="text" class="form-control input-config-planilla" id="aporte-profuturo" disabled/>
+                  <div class="input-group">
+                    <input type="text" class="form-control input-config-planilla" id="aporte-profuturo" disabled/>
+                  <span class="input-group-text">%</span>
+                  </div>
                 </td>
               </tr>
               <tr>
                 <th>COMISION % SOBRE R.A.</th>
                 <td>
-                  <input type="text" class="form-control input-config-planilla" id="comision-onp" disabled/>
+                  <div class="input-group">
+                    <input type="text" class="form-control input-config-planilla" id="comision-onp" disabled/>
+                  <span class="input-group-text">%</span>
+                  </div>
                 </td>
                 <td>
-                  <input type="text" class="form-control input-config-planilla" id="comision-prima" disabled/>
+                  <div class="input-group">
+                    <input type="text" class="form-control input-config-planilla" id="comision-prima" disabled/>
+                  <span class="input-group-text">%</span>
+                  </div>
                 </td>
                 <td>
-                  <input type="text" class="form-control input-config-planilla" id="comision-habitad" disabled/>
+                  <div class="input-group">
+                    <input type="text" class="form-control input-config-planilla" id="comision-habitad" disabled/>
+                  <span class="input-group-text">%</span>
+                  </div>
                 </td>
                 <td>
-                  <input type="text" class="form-control input-config-planilla" id="comision-integra" disabled/>
+                  <div class="input-group">
+                    <input type="text" class="form-control input-config-planilla" id="comision-integra" disabled/>
+                  <span class="input-group-text">%</span>
+                  </div>
                 </td>
                 <td>
-                  <input type="text" class="form-control input-config-planilla" id="comision-profuturo" disabled/>
+                  <div class="input-group">
+                    <input type="text" class="form-control input-config-planilla" id="comision-profuturo" disabled/>
+                  <span class="input-group-text">%</span>
+                  </div>
                 </td>
               </tr>
               <tr>
                 <th>PRIMA SEGURO</th>
                 <td>
-                  <input type="text" class="form-control input-config-planilla" id="prima-onp" disabled/>
+                  <div class="input-group">
+                    <input type="text" class="form-control input-config-planilla" id="prima-onp" disabled/>
+                  <span class="input-group-text">%</span>
+                  </div>
                 </td>
                 <td>
-                  <input type="text" class="form-control input-config-planilla" id="prima-prima" disabled/>
+                  <div class="input-group">
+                    <input type="text" class="form-control input-config-planilla" id="prima-prima" disabled/>
+                  <span class="input-group-text">%</span>
+                  </div>
                 </td>
                 <td>
-                  <input type="text" class="form-control input-config-planilla" id="prima-habitat" disabled/>
+                  <div class="input-group">
+                    <input type="text" class="form-control input-config-planilla" id="prima-habitat" disabled/>
+                  <span class="input-group-text">%</span>
+                  </div>
                 </td>
                 <td>
-                  <input type="text" class="form-control input-config-planilla" id="prima-integra" disabled/>
+                  <div class="input-group">
+                    <input type="text" class="form-control input-config-planilla" id="prima-integra" disabled/>
+                  <span class="input-group-text">%</span>
+                  </div>
                 </td>
                 <td>
-                  <input type="text" class="form-control input-config-planilla" id="prima-profuturo" disabled/>
+                  <div class="input-group">
+                    <input type="text" class="form-control input-config-planilla" id="prima-profuturo" disabled/>
+                  <span class="input-group-text">%</span>
+                  </div>
                 </td>
               </tr>
             </tbody>

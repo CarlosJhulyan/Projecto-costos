@@ -67,23 +67,23 @@ function App() {
 
 function chargeDataConfigPlanilla(dataConfigPlanilla) {
   rmv.value = dataConfigPlanilla.rmv;
-  familiar.value = dataConfigPlanilla.familiar + '%';
-  essalud.value = dataConfigPlanilla.essalud + '%';
-  aporteONP.value = dataConfigPlanilla.aporteONP + '%';
-  aportePrima.value = dataConfigPlanilla.aportePrima + '%';
-  aporteHabitad.value = dataConfigPlanilla.aporteHabitad + '%';
-  aporteIntegra.value = dataConfigPlanilla.aporteIntegra + '%';
-  aporteProfuturo.value = dataConfigPlanilla.aporteProfuturo + '%';
-  comisionONP.value = dataConfigPlanilla.comisionONP + '%';
-  comisionPrima.value = dataConfigPlanilla.comisionPrima + '%';
-  comisionHabitad.value = dataConfigPlanilla.comisionHabitad + '%';
-  comisionIntegra.value = dataConfigPlanilla.comisionIntegra + '%';
-  comisionProfuturo.value = dataConfigPlanilla.comisionProfuturo + '%';
-  primaONP.value = dataConfigPlanilla.primaONP + '%';
-  primaPrima.value = dataConfigPlanilla.primaPrima + '%';
-  primaHabitad.value = dataConfigPlanilla.primaHabitad + '%';
-  primaIntegra.value = dataConfigPlanilla.primaIntegra + '%';
-  primaProfuturo.value = dataConfigPlanilla.primaProfuturo + '%';
+  familiar.value = dataConfigPlanilla.familiar;
+  essalud.value = dataConfigPlanilla.essalud;
+  aporteONP.value = dataConfigPlanilla.aporteONP;
+  aportePrima.value = dataConfigPlanilla.aportePrima;
+  aporteHabitad.value = dataConfigPlanilla.aporteHabitad;
+  aporteIntegra.value = dataConfigPlanilla.aporteIntegra;
+  aporteProfuturo.value = dataConfigPlanilla.aporteProfuturo;
+  comisionONP.value = dataConfigPlanilla.comisionONP;
+  comisionPrima.value = dataConfigPlanilla.comisionPrima;
+  comisionHabitad.value = dataConfigPlanilla.comisionHabitad;
+  comisionIntegra.value = dataConfigPlanilla.comisionIntegra;
+  comisionProfuturo.value = dataConfigPlanilla.comisionProfuturo;
+  primaONP.value = dataConfigPlanilla.primaONP;
+  primaPrima.value = dataConfigPlanilla.primaPrima;
+  primaHabitad.value = dataConfigPlanilla.primaHabitad;
+  primaIntegra.value = dataConfigPlanilla.primaIntegra;
+  primaProfuturo.value = dataConfigPlanilla.primaProfuturo;
 }
 
 function handleChangeEditPlanilla (e) {

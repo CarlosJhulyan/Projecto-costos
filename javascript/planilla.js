@@ -6,7 +6,7 @@ const firebaseConfig = {
   projectId: "proyecto-costos-13e03",
   storageBucket: "proyecto-costos-13e03.appspot.com",
   messagingSenderId: "135704243594",
-  appId: "1:135704243594:web:cf6177de9f55267e79ec73"
+  appId: "1:135704243594:web:cf6177de9f55267e79ec73",
 };
 
 // Initialize Firebase
@@ -49,6 +49,11 @@ const periodoLabel = document.getElementById('periodo-label');
 const buttonFetchHeader = document.getElementById('button-fetch-header');
 const buttonSave = document.getElementById('button-save');
 const buttonClear = document.getElementById('button-clear');
+const buttonFormat = document.getElementById('button-format');
+
+const cpmoLabel = document.getElementById('cpmo-label');
+const cepttLabel = document.getElementById('ceptt-label');
+
 
 // Constantes y variables
 const dataFormRemuneracion = {
@@ -69,9 +74,9 @@ const dataFormRemuneracion = {
   remunera: 0,
   essalud: 0,
   total: 0,
-  retencion: 'afp',
+  retencion: 'snp',
   totalAport: 0,
-  asignacionValue: '',
+  asignacionValue: 0,
   retencionAfp: 'prima',
 }
 
@@ -83,16 +88,42 @@ const dataFormHeader = {
 };
 
 const listaRemuneraciones = [];
+//agregar
 
 const dataConfig = {
   aFamiliar: 0,
   essalud: 0,
   rmv: 0,
   aporteONP: 0,
+  aportePrima:0,
+  comisionPrima:0,
+  primaPrima:0,
+
+  aporteHabitad:0,
+  comisionHabitad:0,
+  primaHabitad:0,
+
+  aporteIntegra:0,
+  comisionIntegra:0,
+  primaIntegra:0,
+
+  aporteProfuturo:0,
+  comisionProfuturo:0,
+  primaProfuturo:0,
 }
 
 const totales = {
-  
+  totalSueldos: 0,
+  totalAsigna: 0,
+  totalOtros: 0,
+  totalTotalRem: 0,
+  totalAfp: 0,
+  totalSnp: 0,
+  totalRenta: 0,
+  totalTotalReten: 0,
+  totalRemuneraNeta: 0,
+  totalEssalud: 0,
+  totalAportacion: 0,
 }
 
 // App
@@ -127,11 +158,25 @@ function App() {
 
   buttonSave.addEventListener('click', saveListRemuneraciones);
   buttonClear.addEventListener('click', clearTableRemuneraciones);
+  buttonFormat.addEventListener('click', formatPage);
 }
 
 
-
 // Funciones y procesos
+
+function formatPage() {
+  Swal.fire({
+    title: '¿Quieres generar una nueva plantilla?',
+    showDenyButton: false,
+    showCancelButton: true,
+    confirmButtonText: 'Yes',
+  }).then((result) => {
+    if (result.isConfirmed) {
+      localStorage.removeItem('id');
+      window.location.reload();
+    }
+  });
+}
 
 function handleChangeInputHeader(e) {
   validateInputsDOM(formHeaderPlanilla.id);
@@ -161,6 +206,7 @@ function handleSubmitHeaderPlanilla(e) {
         .set(dataFormHeader)
         .then(() => {
           showLoadingButtonHeader(false);
+          setPlanillaDescriptionDOM(dataFormHeader);
           openNotification('Encabezado', '¡Encabezado actualizado!', 'success');
           e.target.reset();
         })
@@ -170,9 +216,21 @@ function handleSubmitHeaderPlanilla(e) {
         .doc(id)
         .set(dataFormHeader)
         .then(() => {
-          showLoadingButtonHeader(false);
+          setPlanillaDescriptionDOM(dataFormHeader);
+
+          remuneracionesPlanillaRef
+          .doc(id)
+          .set({
+            lista: [],
+            totales
+          })
+          .then(() => {
+            showLoadingButtonHeader(false);
+            openNotification('Encabezado', '¡Encabezado guardado!', 'success');
+          })
+          .catch(error => console.error(error));
+
           localStorage.setItem('id', id);
-          openNotification('Encabezado', '¡Encabezado guardado!', 'success');
           e.target.reset();
         })
         .catch(error => console.error(error));
@@ -183,6 +241,7 @@ function handleSubmitRemuneracionPlanilla(e) {
   e.preventDefault();
   if (validateInputs(formInsertarPlanilla.id)) {
     insertRemuneracionToList();
+    insertTotalesToList();
     insertItemsDOM();
     clearDataRemuneraciones();
     openNotification('Remuneración', '¡Remuneración insertado en la tabla!', 'success');
@@ -196,7 +255,10 @@ function saveListRemuneraciones() {
     if (listaRemuneraciones.length !== 0)
       remuneracionesPlanillaRef
       .doc(localStorage.getItem('id'))
-      .set({ lista: listaRemuneraciones })
+      .set({ 
+        lista: listaRemuneraciones,
+        totales
+      })
       .then(() => {
         showLoadingButtonSave(false);
         openNotification('Remuneración', '¡Lista de remuneraciones guardado!', 'success');
@@ -211,9 +273,9 @@ function insertRemuneracionToList() {
   const sueldo = dataFormRemuneracion.sueldo;
   const asignacionValue = getAsignacionFamiliar(asignacion);
   const totalRem = getTotalRem(sueldo, asignacionValue);
-  const snp = getRetenciones(totalRem, "snp", retencion.value);
-  const afp = getRetenciones(totalRem, "afp", retencion.value);
-  const quinta = getRetenciones(totalRem, "renta", retencion.value);
+  const snp = getRetenciones(totalRem, "snp", retencion.value, retencionAfp.value);
+  const afp = getRetenciones(totalRem, "afp", retencion.value, retencionAfp.value);
+  const quinta = getRetenciones(totalRem, "renta", retencion.value, retencionAfp.value);
   const totalReten = getTotalRetenciones(afp, snp, quinta);
   const remunera = getRemuneAportacion(totalRem, totalReten);
   const essalud = getEssalud(totalRem);
@@ -234,6 +296,20 @@ function insertRemuneracionToList() {
   });
 }
 
+function insertTotalesToList() {
+  totales.totalSueldos = getTotalColumn('sueldo');
+  totales.totalAsigna = getTotalColumn('asignacionValue');
+  totales.totalOtros = getTotalColumn('otros');
+  totales.totalTotalRem = getTotalColumn('totalRem');
+  totales.totalAfp = getTotalColumn('afp');
+  totales.totalSnp = getTotalColumn('snp');
+  totales.totalRenta = getTotalColumn('quinta');
+  totales.totalTotalReten = getTotalColumn('totalReten');
+  totales.totalRemuneraNeta = getTotalColumn('remunera');
+  totales.totalEssalud = getTotalColumn('essalud');
+  totales.totalAportacion = getTotalColumn('totalAport');
+}
+
 function getDataConfigPlanilla() {
   showSpin(true);
   configPlanillaRef.get().then((doc) => {
@@ -250,9 +326,7 @@ function getDataHeaderPlanilla() {
   headerPlanillaRef.doc(id).get().then((doc) => {
     if (doc.exists) {
       const data = doc.data();
-      razonSocialLabel.textContent = data.razonSocial;
-      rucLabel.textContent = data.ruc;
-      periodoLabel.textContent = data.year;
+      setPlanillaDescriptionDOM(data);
     } else openNotification('Base de datos', '¡No se encontró la collección!', 'error');
   }).catch((error) => console.error(error));
 }
@@ -263,6 +337,7 @@ function getDataRemuneracionPlanilla() {
     if (doc.exists) {
       const data = doc.data();
       listaRemuneraciones.push(...data.lista);
+      insertTotalesToList();
       insertItemsDOM();
     } else openNotification('Base de datos', '¡No se encontró la collección!', 'error');
   }).catch((error) => console.error(error));
@@ -302,6 +377,9 @@ function clearDataRemuneraciones() {
   dataFormRemuneracion.apellidos = '';
   dataFormRemuneracion.dni = '';
   dataFormRemuneracion.cargo = '';
+  dataFormRemuneracion.asignacion = 'si';
+  dataFormRemuneracion.retencion = 'snp';
+  dataFormRemuneracion.retencionAfp = 'prima';
 }
 
 function clearTableRemuneraciones(){
@@ -315,11 +393,24 @@ function clearItemList(index) {
 }
 
 function chargeDataConfig(data) {
-  dataConfig.essalud = data.essalud / 100;
   dataConfig.rmv = data.rmv;
+  dataConfig.essalud = data.essalud / 100;
   dataConfig.aFamiliar = data.familiar / 100;
   dataConfig.aporteONP = data.aporteONP / 100;
+
+  dataConfig.aportePrima=data.aportePrima/100;
+  dataConfig.comisionPrima=data.comisionPrima/100;
+  dataConfig.primaPrima=data.primaPrima/100;
+
+  dataConfig.aporteHabitad=data.aporteHabitad/100;
+  dataConfig.comisionHabitad=data.comisionHabitad/100;
+  dataConfig.primaHabitad=data.primaHabitad/100;
+
+  dataConfig.aporteProfuturo=data.aporteProfuturo/100;
+  dataConfig.comisionProfuturo=data.comisionProfuturo/100;
+  dataConfig.primaProfuturo=data.primaProfuturo/100;
 }
+
 
 // Funnciones para cálculos 
 
@@ -332,16 +423,19 @@ function getTotalRem(sueldo, asigFamiliar){
 }
 
 function getRetenciones(totalRemuneracion, tipo, tipoRetencion, tipoAFP) {
-  if (tipoRetencion === "snp" && tipo === "snp") {
+  if (tipoRetencion === "snp" && tipo === "snp")
     return totalRemuneracion * dataConfig.aporteONP;
-  } else if (tipoRetencion === "afp" && tipo === "afp") {
-    if (tipoAFP === "integra") {
-      return 345545;
-    } else if (tipoAFP === "habitad") {
-      return 384738943;
-    }
+  else if (tipoRetencion === "afp" && tipo === "afp") {
+    if (tipoAFP === "prima")
+      return (dataConfig.aportePrima+dataConfig.comisionPrima+dataConfig.primaPrima)*totalRemuneracion;
+    else if (tipoAFP === "habitad")
+      return (dataConfig.aportePrima+dataConfig.comisionPrima+dataConfig.primaPrima)*totalRemuneracion;
+    else if (tipoAFP === "integra")
+      return (dataConfig.aporteIntegra+dataConfig.comisionIntegra+dataConfig.primaIntegra)*totalRemuneracion;
+    else if (tipoAFP === "profuturo")
+      return (dataConfig.aporteProfuturo+dataConfig.comisionProfuturo+dataConfig.primaProfuturo)*totalRemuneracion;
   } else if (tipoRetencion === "renta" && tipo === "renta") {
-    return 4385348;
+    return 1000;
   } else {
     return 0;
   }
@@ -378,7 +472,7 @@ function getTotalColumn(type) {
     }, 0);
     return current + total;
   }, 0);
-  return roundNumber(t);
+  return t;
 }
 
 
@@ -429,17 +523,17 @@ function itemTablePlanillaDOM(data) {
     <td>${dni}</td>
     <td>${fecha}</td>
     <td>${cargo}</td>
-    <td>${sueldo}</td>
-    <td>${roundNumber(asignacionValue)}</td>
-    <td>${otros}</td>
-    <td>${roundNumber(totalRem)}</td>
-    <td>${roundNumber(afp)}</td>
-    <td>${roundNumber(snp)}</td>
-    <td>${roundNumber(quinta)}</td>
-    <td>${roundNumber(totalReten)}</td>
-    <td>${roundNumber(remunera)}</td>
-    <td>${roundNumber(essalud)}</td>
-    <td>${roundNumber(totalAport)}</td>
+    <td class="text-end">${sueldo}</td>
+    <td class="text-end">${roundNumber(asignacionValue)}</td>
+    <td class="text-end">${otros}</td>
+    <td class="text-end">${roundNumber(totalRem)}</td>
+    <td class="text-end">${roundNumber(afp)}</td>
+    <td class="text-end">${roundNumber(snp)}</td>
+    <td class="text-end">${roundNumber(quinta)}</td>
+    <td class="text-end">${roundNumber(totalReten)}</td>
+    <td class="text-end">${roundNumber(remunera)}</td>
+    <td class="text-end">${roundNumber(essalud)}</td>
+    <td class="text-end">${roundNumber(totalAport)}</td>
   `;
 
   const button = document.createElement('button');
@@ -453,9 +547,7 @@ function itemTablePlanillaDOM(data) {
       <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
     </svg>
   `;
-  button.onclick = () => {
-    clearItemList(key);
-  }
+  button.onclick = () => clearItemList(key);
 
   td.appendChild(button);
   tr.appendChild(td);
@@ -471,19 +563,23 @@ function itemEndTableTotal() {
     <td></td>
     <td></td>
     <th class="text-primary">TOTAL</th>
-    <td>${getTotalColumn('sueldo')}</td>
-    <td>${getTotalColumn('asignacionValue')}</td>
-    <td>${getTotalColumn('otros')}</td>
-    <td class="text-success">${getTotalColumn('totalRem')}</td>
-    <td>${getTotalColumn('afp')}</td>
-    <td>${getTotalColumn('snp')}</td>
-    <td>${getTotalColumn('quinta')}</td>
-    <td>${getTotalColumn('totalReten')}</td>
-    <td class="text-warning">${getTotalColumn('remunera')}</td>
-    <td>${getTotalColumn('essalud')}</td>
-    <td class="text-success">${getTotalColumn('totalAport')}</td>
+    <td class="text-end">${roundNumber(totales.totalSueldos)}</td>
+    <td class="text-end">${roundNumber(totales.totalAsigna)}</td>
+    <td class="text-end">${roundNumber(totales.totalOtros)}</td>
+    <td class="text-success text-end">${roundNumber(totales.totalTotalRem)}</td>
+    <td class="text-end">${roundNumber(totales.totalAfp)}</td>
+    <td class="text-end">${roundNumber(totales.totalSnp)}</td>
+    <td class="text-end">${roundNumber(totales.totalRenta)}</td>
+    <td class="text-end">${roundNumber(totales.totalTotalReten)}</td>
+    <td class="text-warning text-end">${roundNumber(totales.totalRemuneraNeta)}</td>
+    <td class="text-end">${roundNumber(totales.totalEssalud)}</td>
+    <td class="text-success text-end">${roundNumber(totales.totalAportacion)}</td>
     <td></td>
   `;
+
+  cpmoLabel.textContent = "S/. "+roundNumber(totales.totalTotalRem + totales.totalAportacion);
+  cepttLabel.textContent = "S/. "+roundNumber(totales.totalRemuneraNeta);
+
   return tr;
 }
 
@@ -561,5 +657,8 @@ function showInputRetencionAfp(flag) {
   else tiposAfp.setAttribute('hidden', '');
 }
 
-// document.getElementById('cpmo').innerHTML= (getTotalColumn(totalRemuneracion)+getTotalColumn(total)).toString;
-// document.getElementById('ceptt').innerHTML= (getTotalColumn(remunera)).toString;
+function setPlanillaDescriptionDOM(data) {
+  razonSocialLabel.textContent = data.razonSocial;
+  rucLabel.textContent = data.ruc;
+  periodoLabel.textContent = data.year;
+}
