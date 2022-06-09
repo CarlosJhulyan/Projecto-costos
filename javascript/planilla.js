@@ -88,7 +88,6 @@ const dataFormHeader = {
 };
 
 const listaRemuneraciones = [];
-//agregar
 
 const dataConfig = {
   aFamiliar: 0,
