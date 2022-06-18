@@ -99,3 +99,15 @@ input[type=number]::-webkit-inner-spin-button {
 select{
   text-overflow: ellipsis;
 }*/
+
+
+
+#workers{
+background-color: rgb(15, 13, 13);
+color: rgb(244, 244, 246);
+
+}
+
+#wvalue{
+  background-color: rgb(26, 39, 229);
+  }

@@ -42,6 +42,7 @@ const asignacion = document.getElementById('asignacion');
 const retencion = document.getElementById('retencion');
 const retencionAfp = document.getElementById('retencion-afp');
 const tiposAfp = document.getElementById('tipos-afp');
+const otros = document.getElementById('otros');
 
 const razonSocialLabel = document.getElementById('razon-social-label');
 const rucLabel = document.getElementById('ruc-label');
@@ -154,6 +155,7 @@ function App() {
   asignacion.addEventListener('input', handleChangeInputRemuneracion);
   retencion.addEventListener('input', handleChangeInputRemuneracion);
   retencionAfp.addEventListener('input', handleChangeInputRemuneracion);
+  otros.addEventListener('input', handleChangeInputRemuneracion);
 
   buttonSave.addEventListener('click', saveListRemuneraciones);
   buttonClear.addEventListener('click', clearTableRemuneraciones);
@@ -185,11 +187,15 @@ function handleChangeInputHeader(e) {
 function handleChangeInputRemuneracion(e) {
   validateInputsDOM(formInsertarPlanilla.id);
   if (e.target.name === 'fecha')
-    dataFormRemuneracion.fecha = moment(e.target.value, 'yyyy-MM-DD').format('DD-MM-yyyy');
+    dataFormRemuneracion.fecha = moment(e.target.value, 'yyyy-MM-DD').format('DD-MM-yyyy')
   else if (e.target.name === 'sueldo')
     dataFormRemuneracion.sueldo = Number(e.target.value);
-  else if (e.target.name === 'retencion')
+  else if (e.target.name === 'otros')
+    dataFormRemuneracion.otros = Number(e.target.value);
+  else if (e.target.name === 'retencion') {
+    dataFormRemuneracion.retencion = e.target.value;
     showInputRetencionAfp(e.target.name === 'retencion' && e.target.value === "afp");
+  } 
   else dataFormRemuneracion[e.target.name] = e.target.value;
 }
 
@@ -226,11 +232,10 @@ function handleSubmitHeaderPlanilla(e) {
           .then(() => {
             showLoadingButtonHeader(false);
             openNotification('Encabezado', '¡Encabezado guardado!', 'success');
+            localStorage.setItem('id', id);
+            e.target.reset();
           })
           .catch(error => console.error(error));
-
-          localStorage.setItem('id', id);
-          e.target.reset();
         })
         .catch(error => console.error(error));
   }
@@ -245,6 +250,7 @@ function handleSubmitRemuneracionPlanilla(e) {
     clearDataRemuneraciones();
     openNotification('Remuneración', '¡Remuneración insertado en la tabla!', 'success');
     e.target.reset();
+    showInputRetencionAfp(false);
   }
 }
 
@@ -253,25 +259,25 @@ function saveListRemuneraciones() {
     showLoadingButtonSave(true);
     if (listaRemuneraciones.length !== 0)
       remuneracionesPlanillaRef
-      .doc(localStorage.getItem('id'))
-      .set({ 
-        lista: listaRemuneraciones,
-        totales
-      })
-      .then(() => {
-        showLoadingButtonSave(false);
-        openNotification('Remuneración', '¡Lista de remuneraciones guardado!', 'success');
-      })
-      .catch(error => console.error(error));
-      else openNotification('Remuneración', '¡La lista esta vacia!', 'warning');
+        .doc(localStorage.getItem('id'))
+        .set({ 
+          lista: listaRemuneraciones,
+          totales
+        })
+        .then(() => {
+          showLoadingButtonSave(false);
+          openNotification('Remuneración', '¡Lista de remuneraciones guardado!', 'success');
+        })
+        .catch(error => console.error(error));
+    else openNotification('Remuneración', '¡La lista esta vacia!', 'warning');
   } else openNotification('Remuneración', '¡Configurar la cabecera de planilla!', 'warning');
 }
 
 function insertRemuneracionToList() {
-  const asignacion = dataFormRemuneracion.asignacion; // texto
+  const asignacion = dataFormRemuneracion.asignacion;
   const sueldo = dataFormRemuneracion.sueldo;
   const asignacionValue = getAsignacionFamiliar(asignacion);
-  const totalRem = getTotalRem(sueldo, asignacionValue);
+  const totalRem = getTotalRem(sueldo, asignacionValue, dataFormRemuneracion.otros);
   const snp = getRetenciones(totalRem, "snp", retencion.value, retencionAfp.value);
   const afp = getRetenciones(totalRem, "afp", retencion.value, retencionAfp.value);
   const quinta = getRetenciones(totalRem, "renta", retencion.value, retencionAfp.value);
@@ -279,7 +285,7 @@ function insertRemuneracionToList() {
   const remunera = getRemuneAportacion(totalRem, totalReten);
   const essalud = getEssalud(totalRem);
   const totalAport = totalAportacion(totalRem);
-
+  
   listaRemuneraciones.push({
     ...dataFormRemuneracion,
     totalRem,
@@ -291,7 +297,6 @@ function insertRemuneracionToList() {
     remunera,
     essalud,
     totalAport,
-    otros: 0,
   });
 }
 
@@ -401,6 +406,10 @@ function chargeDataConfig(data) {
   dataConfig.comisionPrima=data.comisionPrima/100;
   dataConfig.primaPrima=data.primaPrima/100;
 
+  dataConfig.aporteIntegra=data.aporteIntegra/100;
+  dataConfig.comisionIntegra=data.comisionIntegra/100;
+  dataConfig.primaIntegra=data.primaIntegra/100;
+
   dataConfig.aporteHabitad=data.aporteHabitad/100;
   dataConfig.comisionHabitad=data.comisionHabitad/100;
   dataConfig.primaHabitad=data.primaHabitad/100;
@@ -417,8 +426,8 @@ function getAsignacionFamiliar(asigFamiliar) {
   return asigFamiliar === "si" ? dataConfig.rmv * dataConfig.aFamiliar : 0;
 }
 
-function getTotalRem(sueldo, asigFamiliar){
-  return Number(sueldo) + Number(asigFamiliar);
+function getTotalRem(sueldo, asigFamiliar,otros){
+  return Number(sueldo) + Number(asigFamiliar)+Number(otros);
 }
 
 function getRetenciones(totalRemuneracion, tipo, tipoRetencion, tipoAFP) {
@@ -428,7 +437,7 @@ function getRetenciones(totalRemuneracion, tipo, tipoRetencion, tipoAFP) {
     if (tipoAFP === "prima")
       return (dataConfig.aportePrima+dataConfig.comisionPrima+dataConfig.primaPrima)*totalRemuneracion;
     else if (tipoAFP === "habitad")
-      return (dataConfig.aportePrima+dataConfig.comisionPrima+dataConfig.primaPrima)*totalRemuneracion;
+      return (dataConfig.aporteHabitad+dataConfig.comisionHabitad+dataConfig.primaHabitad)*totalRemuneracion;
     else if (tipoAFP === "integra")
       return (dataConfig.aporteIntegra+dataConfig.comisionIntegra+dataConfig.primaIntegra)*totalRemuneracion;
     else if (tipoAFP === "profuturo")
@@ -439,6 +448,7 @@ function getRetenciones(totalRemuneracion, tipo, tipoRetencion, tipoAFP) {
     return 0;
   }
 }
+
 function roundNumber(value = 0) {
   const t = value.toString();
   const regex=/(\d*.\d{0,2})/;

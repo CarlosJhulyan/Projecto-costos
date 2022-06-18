@@ -238,17 +238,27 @@
               </div>
             </div>
             <div class="row">
-              <div class="mb-3 col">
+              <div class="mb-4 col">
                 <label for="cargo" class="form-label">Cargo</label>
                 <input type="text" class="form-control" id="cargo" name="cargo" />
               </div>
-              <div class="mb-3 col">
+              <div class="mb-2 col">
                 <label for="sueldo" class="form-label">Sueldo basico</label>
                 <div class="input-group">
                   <span class="input-group-text">S/.</span>
                   <input type="number" class="form-control" id="sueldo" name="sueldo" />
                 </div>
               </div>
+
+              <div class="mb-2 col">
+                <label for="otros" class="form-label">Otros ingresos</label>
+                <div class="input-group">
+                  <span class="input-group-text">S/.</span>
+                  <input type="number" class="form-control" id="otros" name="otros" />
+                </div>
+              </div>
+
+
             </div>
             <div class="row">
               <div class="mb-3 col">
@@ -266,6 +276,9 @@
                   <option value="renta">RENTA QUINTA</option>
                 </select>
               </div>
+
+             
+
               <div class="mb-3 col" hidden id="tipos-afp">
                 <label for="retencion-afp" class="form-label">RETENCIONES AFP</label>
                 <select class="form-select" id="retencion-afp" name="retencionAfp">
