@@ -56,6 +56,7 @@ const formHeaderControl = document.getElementById('form-header-control');
 const formInsertarControl = document.getElementById('form-insertar-control');
 const buttonSave = document.getElementById('button-save');
 const buttonClear = document.getElementById('button-clear');
+const buttonFormat = document.getElementById('button-format');
 
 const periodoLabel = document.getElementById('periodo-label');
 const rucLabel = document.getElementById('ruc-label');
@@ -159,8 +160,22 @@ function App() {
 
   buttonSave.addEventListener('click', saveListControl);
   buttonClear.addEventListener('click', clearTableInventario);
+  buttonFormat.addEventListener('click', formatPage);
 }
 
+function formatPage() {
+  Swal.fire({
+    title: '¿Quieres generar un nuevo control de inventario?',
+    showDenyButton: false,
+    showCancelButton: true,
+    confirmButtonText: 'Yes',
+  }).then((result) => {
+    if (result.isConfirmed) {
+      localStorage.removeItem('id-control');
+      window.location.reload();
+    }
+  });
+}
 
 // Funciones y procesos
 
