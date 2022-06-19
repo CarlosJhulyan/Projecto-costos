@@ -309,8 +309,8 @@ function setAportesEmpleadorComisionAfpDOM(retencion, retencionAfp, totalRem) {
     comisionPorcentualNeto.textContent= "0.00";
     primaSegurosNeto.textContent="0.00";
 
-    aporteObligatorioDescuentos.textContent=dataConfig.aporteONP*totalRem
-    aporteObligatorioNeto.textContent="-"+dataConfig.aporteONP*totalRem
+    aporteObligatorioDescuentos.textContent=roundNumber(dataConfig.aporteONP*totalRem);
+    aporteObligatorioNeto.textContent="-"+roundNumber(dataConfig.aporteONP*totalRem);
 
   }else{
   if (retencion=="afp" && retencionAfp=="prima") {
@@ -319,13 +319,13 @@ function setAportesEmpleadorComisionAfpDOM(retencion, retencionAfp, totalRem) {
     rentaNeto.textContent="0.00";
     pensionesNeto.textContent="0.00";
 
-    comisionPorcentualDescuentos.textContent= dataConfig.comisionPrima*totalRem;
-    primaSegurosDescuentos.textContent=dataConfig.primaPrima*totalRem;
-    aporteObligatorioDescuentos.textContent=dataConfig.aportePrima*totalRem;
+    comisionPorcentualDescuentos.textContent= roundNumber(dataConfig.comisionPrima*totalRem);
+    primaSegurosDescuentos.textContent=roundNumber(dataConfig.primaPrima*totalRem);
+    aporteObligatorioDescuentos.textContent=roundNumber(dataConfig.aportePrima*totalRem);
 
-    comisionPorcentualNeto.textContent="-"+ dataConfig.comisionPrima*totalRem; 
-    primaSegurosNeto.textContent="-"+dataConfig.primaPrima*totalRem;
-    aporteObligatorioNeto.textContent="-"+dataConfig.aportePrima*totalRem;
+    comisionPorcentualNeto.textContent="-"+ roundNumber(dataConfig.comisionPrima*totalRem);
+    primaSegurosNeto.textContent="-"+roundNumber(dataConfig.primaPrima*totalRem);
+    aporteObligatorioNeto.textContent="-"+roundNumber(dataConfig.aportePrima*totalRem);
   } 
   
   else if(retencion=="afp" && retencionAfp=="habitad") {
@@ -335,13 +335,13 @@ function setAportesEmpleadorComisionAfpDOM(retencion, retencionAfp, totalRem) {
     rentaNeto.textContent="0.00";
     pensionesNeto.textContent="0.00";
 
-    comisionPorcentualDescuentos.textContent= dataConfig.comisionHabitad*totalRem;
-    primaSegurosDescuentos.textContent=dataConfig.primaHabitad*totalRem;
-    aporteObligatorioDescuentos.textContent=dataConfig.aporteHabitad*totalRem;
+    comisionPorcentualDescuentos.textContent= roundNumber(dataConfig.comisionHabitad*totalRem);
+    primaSegurosDescuentos.textContent=roundNumber(dataConfig.primaHabitad*totalRem);
+    aporteObligatorioDescuentos.textContent=roundNumber(dataConfig.aporteHabitad*totalRem);
 
-    comisionPorcentualNeto.textContent="-"+ dataConfig.comisionHabitad*totalRem;
-    primaSegurosNeto.textContent="-"+dataConfig.primaHabitad*totalRem;
-    aporteObligatorioNeto.textContent="-"+dataConfig.aporteHabitad*totalRem;
+    comisionPorcentualNeto.textContent="-"+ roundNumber(dataConfig.comisionHabitad*totalRem);
+    primaSegurosNeto.textContent="-"+roundNumber(dataConfig.primaHabitad*totalRem);
+    aporteObligatorioNeto.textContent="-"+roundNumber(dataConfig.aporteHabitad*totalRem);
 
   }
   else if(retencion=="afp" && retencionAfp=="profuturo") {
@@ -350,26 +350,26 @@ function setAportesEmpleadorComisionAfpDOM(retencion, retencionAfp, totalRem) {
     rentaNeto.textContent="0.00";
     pensionesNeto.textContent="0.00";
 
-    comisionPorcentualDescuentos.textContent= dataConfig.comisionProfuturo*totalRem;
-    primaSegurosDescuentos.textContent=dataConfig.primaProfuturo*totalRem;
-    aporteObligatorioDescuentos.textContent=dataConfig.aporteProfuturo*totalRem;
+    comisionPorcentualDescuentos.textContent= roundNumber(dataConfig.comisionProfuturo*totalRem);
+    primaSegurosDescuentos.textContent=roundNumber(dataConfig.primaProfuturo*totalRem);
+    aporteObligatorioDescuentos.textContent=roundNumber(dataConfig.aporteProfuturo*totalRem);
    
-    comisionPorcentualNeto.textConten="-"+ dataConfig.comisionProfuturo*totalRem;
-    primaSegurosNeto.textContent="-"+dataConfig.primaProfuturo*totalRem;
-    aporteObligatorioNeto.textContent+"-"+dataConfig.aporteProfuturo*totalRem;
+    comisionPorcentualNeto.textConten="-"+ roundNumber(dataConfig.comisionProfuturo*totalRem);
+    primaSegurosNeto.textContent="-"+roundNumber(dataConfig.primaProfuturo*totalRem);
+    aporteObligatorioNeto.textContent+"-"+roundNumber(dataConfig.aporteProfuturo*totalRem);
   }  
   else if(retencion=="afp" && retencionAfp=="integra") {
     rentaDescuentos.textContent="0.00";
     pensionesDescuentos.textContent="0.00";
     rentaNeto.textContent="0.00";
     pensionesNeto.textContent="0.00";
-    comisionPorcentualDescuentos.textContent= dataConfig.comisionIntegra*totalRem;
-    primaSegurosDescuentos.textContent=dataConfig.primaIntegra*totalRem;
-    aporteObligatorioDescuentos.textContent=dataConfig.aporteIntegra*totalRem;
+    comisionPorcentualDescuentos.textContent= roundNumber(dataConfig.comisionIntegra*totalRem);
+    primaSegurosDescuentos.textContent=roundNumber(dataConfig.primaIntegra*totalRem);
+    aporteObligatorioDescuentos.textContent=roundNumber(dataConfig.aporteIntegra*totalRem);
 
-    comisionPorcentualNeto.textConten="-"+ dataConfig.comisionIntegra*totalRem;
-    primaSegurosNeto.textContent="-"+dataConfig.primaIntegra*totalRem;
-    aporteObligatorioNeto.textContent="-"+dataConfig.aporteIntegra*totalRem;
+    comisionPorcentualNeto.textConten="-"+ roundNumber(dataConfig.comisionIntegra*totalRem);
+    primaSegurosNeto.textContent="-"+roundNumber(dataConfig.primaIntegra*totalRem);
+    aporteObligatorioNeto.textContent="-"+roundNumber(dataConfig.aporteIntegra*totalRem);
 
   }
 }

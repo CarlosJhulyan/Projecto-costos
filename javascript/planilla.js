@@ -23,6 +23,7 @@ const tableContentPlanilla = document.getElementById('table-content-planilla');
 const spin = document.getElementById('spin');
 
 
+
 // DOM constantes inputs encabezado
 const formHeaderPlanilla = document.getElementById('form-header-planilla');
 const razonSocial= document.getElementById('razon-social');
